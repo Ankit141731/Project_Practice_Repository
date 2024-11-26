@@ -7,7 +7,7 @@ from Experiment.logger import logging
 from Experiment.exception import CustomException
 import os , sys
 from Experiment.utilities import save_obj
-from Experiment.configs import *
+from Experiment.configs.configuration import *
 from dataclasses import dataclass
 from sklearn.base import BaseEstimator , TransformerMixin
 from sklearn.compose import ColumnTransformer
@@ -48,19 +48,26 @@ class Feature_Engineering(BaseEstimator , TransformerMixin):
                    "Time_Order_picked" ,
                 ]
             )
+
+            return df
             logging.info("dropping columns from original data_Set")
 
         except Exception as e:
             raise CustomException(e ,sys)
         
+    def fit(self,X,y=None):
+        return self
+        
     def transform (self ,X:pd.DataFrame , y:None):
         try:
             transformed_df = self.transform_the_data(X)
+
+            return transformed_df
         except Exception as e:
             raise CustomException(e  , sys)
         
 @dataclass        
-class DataTramsformationConfig:
+class DataTramsformationConfig():
     preprocessing_obj_file_path = PREPROCESSING_OBJ_FILE_PATH
     transform_train_file_path = TRANSFORM_TRAIN_FILE_PATH 
     tranform_test_file_path = TRANSFORM_TEST_FILE_PATH 
@@ -96,9 +103,9 @@ class DataTranformation:
             ])
 
             # Ordinal Pipleine 
-            ordinal_pipline = Pipeline(steps = [
+            ordinal_pipeline = Pipeline(steps = [
                 ("impute" ,SimpleImputer(strategy = "most_frequent")),
-                ("ordinal" , ordinal_encoder(categories = ["Road_traffic_density" , "Weather_conditions"])),
+                ("ordinal" ,OrdinalEncoder(categories = ["Road_traffic_density" , "Weather_conditions"])),
                 ("scaler" , StandardScaler(with_mean = False))
 
             ])
@@ -120,7 +127,7 @@ class DataTranformation:
         
     def get_feature_engineering_object(self):
         try:
-            feature_engineering = Pipeline(steps = [('fe', Feature_Engineering())])
+            feature_engineering = Pipeline(steps = [("fe", Feature_Engineering())])
 
             return feature_engineering
         except Exception as e:
@@ -128,8 +135,8 @@ class DataTranformation:
         
     def initiate_data_transformation(self , train_path , test_path):
         try:
-            train_df = pd.read_csv("train_path")
-            test_path = pd.read_csv("test_path")
+            train_df = pd.read_csv(train_path)
+            test_df = pd.read_csv(test_path)
 
             logging.info("obtaining FE steps object")
             fe_obj = self.get_feature_engineering_object()
