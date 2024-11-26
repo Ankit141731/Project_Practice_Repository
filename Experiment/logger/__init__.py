@@ -8,7 +8,7 @@ LOG_DIR = os.path.join(os.getcwd() , LOG_DIR)
 
 os.makedirs(LOG_DIR , exist_ok = True)
 
-CURRENT_TIME_STAMP = f"{datetime.now().strftime("%d-%m-%y-%H-%M-%S")}"
+CURRENT_TIME_STAMP = f"{datetime.now().strftime('%d-%m-%y-%H-%M-%S')}"
 new_log = f"log_{CURRENT_TIME_STAMP}.log"
 
 log_file_path = os.path.join(LOG_DIR , new_log)
